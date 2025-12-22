@@ -27,3 +27,15 @@ export const getAllEvents = async () => {
         return [];
     }
 };
+
+export const getEventBySlug = async (slug: string) => {
+    try {
+        await connectDB();
+        const event = await Event.findOne({ slug });
+        if (!event) return null;
+        return JSON.parse(JSON.stringify(event));
+    } catch (error) {
+        console.error('getEventBySlug failed', error);
+        return null;
+    }
+};

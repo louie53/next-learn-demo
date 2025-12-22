@@ -1,12 +1,11 @@
 import { IEvent } from '@/database';
-import { getSimilarEventsBySlug } from '@/lib/actions/event.actions';
+import { getSimilarEventsBySlug, getEventBySlug } from '@/lib/actions/event.actions';
 import { cacheLife } from 'next/cache';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import BookEvent from './BookEvent';
 import EventCard from './EventCard';
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 const EventDetailItem = ({ icon, alt, label }: { icon: string; alt: string; label: string }) => {
     return (
@@ -49,21 +48,10 @@ const EventDetail = async ({ params }: { params: Promise<string> }) => {
     const slug = await params;
     let event;
     try {
-        const request = await fetch(`${BASE_URL}/api/events/${slug}`, { next: { revalidate: 60 } });
-        if (!request.ok) {
-            if (request.status === 404) {
-                return notFound();
-            }
-            throw new Error(`Failed to fetch event data (${request.status})`);
-        }
-
-        const response = await request.json();
-        event = response.event;
-        if (!event) {
-            return notFound();
-        }
+        event = await getEventBySlug(slug);
+        if (!event) return notFound();
     } catch (error) {
-        console.log('error fetching event', error)
+        console.log('error fetching event by slug', error);
         return notFound();
     }
     const { description, image, overview, date, time, location, mode, agenda, audience, tags, organizer } = event;
