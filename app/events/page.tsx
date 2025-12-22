@@ -14,7 +14,7 @@ type ApiEvent = {
 
 const page = async () => {
   try {
-    const res = await fetch('/api/events', { cache: 'no-store' });
+    const res = await fetch('/api/events');
 
     if (!res.ok) {
       throw new Error(`Failed to fetch events (${res.status})`);
