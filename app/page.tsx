@@ -1,15 +1,16 @@
 import EventCard from "@/components/EventCard";
 import ExploreBtn from "@/components/ExploreBtn";
 import { IEvent } from "@/database";
+import { getAllEvents } from "@/lib/actions/event.actions";
 import { cacheLife } from "next/cache";
 
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 const Page = async () => {
   'use cache';
   cacheLife('hours');
-  const response = await fetch(`${BASE_URL}/api/events`);
-  const { events } = await response.json();
+  // Use direct DB helper on the server instead of fetching our own API route.
+  // getAllEvents returns [] when DB is unreachable (safe for build-time).
+  const events = await getAllEvents();
   return (
     <section >
       <h1 className="text-center">The Hub for Every Dev <br /> Event You can&apos;t miss</h1>
